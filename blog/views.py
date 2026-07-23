@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Blog
+from .forms import BlogForm
 
 
 def blog_list(request):
@@ -29,47 +30,66 @@ def blog_detail(request, pk):
 
 def blog_create(request):
 
-    if request.method == 'POST':
+    if request.method == "POST":
 
-        Blog.objects.create(
+        form = BlogForm(request.POST)
 
-            title=request.POST.get('title'),
+        if form.is_valid():
 
-            content=request.POST.get('content'),
+            blog = form.save(commit=False)
 
-            isPublished=True
+            blog.isPublished = True
 
-        )
+            blog.save()
 
-        return redirect('blog_list')
+            return redirect("blog_list")
+
+    else:
+
+        form = BlogForm()
 
     return render(
         request,
-        'blog/create.html'
+        "blog/create.html",
+        {
+            "form": form
+        }
     )
 
 
 def blog_update(request, pk):
 
-    blog = get_object_or_404(Blog, pk=pk)
+    blog = get_object_or_404(
+        Blog,
+        pk=pk
+    )
 
-    if request.method == 'POST':
+    if request.method == "POST":
 
-        blog.title = request.POST.get('title')
+        form = BlogForm(
+            request.POST,
+            instance=blog
+        )
 
-        blog.content = request.POST.get('content')
+        if form.is_valid():
 
-        blog.save()
+            form.save()
 
-        return redirect(
-            'blog_detail',
-            pk=blog.pk
+            return redirect("blog_list")
+
+    else:
+
+        form = BlogForm(
+            instance=blog
         )
 
     return render(
         request,
-        'blog/update.html',
-        {'blog': blog}
+        "blog/update.html",
+        {
+            "form": form,
+            "blog": blog
+        }
     )
 
 
