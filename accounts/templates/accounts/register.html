@@ -1,0 +1,39 @@
+{% extends "blog/base.html" %}
+
+{% block title %}
+Register
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-lg mx-auto mt-10 bg-white shadow-lg rounded-xl p-8">
+
+    <h1 class="text-3xl font-bold text-center mb-6">
+        Create Account
+    </h1>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        {% if form.errors %}
+<div class="bg-red-100 border border-red-400 text-red-700 p-4 rounded mb-4">
+    {{ form.errors }}
+</div>
+{% endif %}
+
+        {{ form.as_p }}
+
+
+        <button
+            type="submit"
+            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+        >
+            Register
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

@@ -1,6 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Blog
+from .models import Blog, Comment
 from .forms import BlogForm
+from django.contrib.auth.decorators import login_required
+from .forms import CommentForm
+from django.contrib import messages
+
 
 
 def blog_list(request):
@@ -13,36 +17,83 @@ def blog_list(request):
     )
 
 
+
 def blog_detail(request, pk):
 
     blog = get_object_or_404(
         Blog,
-        pk=pk,
-        isPublished=True
+        pk=pk
+        
     )
+
+    if request.method == "POST":
+
+        form = CommentForm(
+            request.POST
+        )
+
+        if form.is_valid():
+
+            comment = form.save(
+                commit=False
+            )
+
+            comment.blog = blog
+
+            comment.author = request.user
+
+            comment.save()
+
+            messages.success(
+    request,
+    "Comment added successfully!"
+)
+
+            return redirect(
+    "blog_detail",
+    pk=blog.pk
+)
+
+    else:
+
+        form = CommentForm()
 
     return render(
         request,
-        'blog/detail.html',
-        {'blog': blog}
+        "blog/detail.html",
+        {
+            "blog": blog,
+            "form": form,
+        }
     )
 
 
+@login_required
 def blog_create(request):
 
     if request.method == "POST":
 
-        form = BlogForm(request.POST)
+        form = BlogForm(
+    request.POST,
+    request.FILES,
+)
 
         if form.is_valid():
 
             blog = form.save(commit=False)
 
+            blog.author = request.user
+
             blog.isPublished = True
 
             blog.save()
 
-            return redirect("blog_list")
+            messages.success(
+    request,
+    "Blog created successfully!"
+)
+
+        return redirect("blog_list")
 
     else:
 
@@ -56,27 +107,34 @@ def blog_create(request):
         }
     )
 
-
+@login_required
 def blog_update(request, pk):
 
     blog = get_object_or_404(
-        Blog,
-        pk=pk
-    )
+    Blog,
+    pk=pk,
+    author=request.user
+)
+    
 
     if request.method == "POST":
 
         form = BlogForm(
-            request.POST,
-            instance=blog
-        )
+    request.POST,
+    request.FILES,
+    instance=blog
+)
 
         if form.is_valid():
 
             form.save()
 
-            return redirect("blog_list")
+            messages.success(
+    request,
+    "Blog updated successfully!"
+)
 
+        return redirect("blog_list")
     else:
 
         form = BlogForm(
@@ -92,19 +150,115 @@ def blog_update(request, pk):
         }
     )
 
-
+@login_required
 def blog_delete(request, pk):
 
-    blog = get_object_or_404(Blog, pk=pk)
+    blog = get_object_or_404(
+    Blog,
+    pk=pk,
+    author=request.user
+)
 
     if request.method == 'POST':
 
         blog.delete()
 
-        return redirect('blog_list')
+        messages.success(
+    request,
+    "Blog deleted successfully!"
+)
+
+    return redirect("blog_list")
 
     return render(
         request,
         'blog/delete.html',
         {'blog': blog}
+    )
+
+
+
+@login_required
+def comment_edit(request, pk):
+
+    comment = get_object_or_404(
+        Comment,
+        pk=pk
+    )
+
+    if comment.author != request.user:
+        return redirect("blog_detail", pk=comment.blog.pk)
+
+    if request.method == "POST":
+
+        form = CommentForm(
+            request.POST,
+            instance=comment
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+    request,
+    "Comment updated successfully!"
+)
+
+        return redirect(
+    "blog_detail",
+    pk=comment.blog.pk
+)
+
+    else:
+
+        form = CommentForm(
+            instance=comment
+        )
+
+    return render(
+        request,
+        "blog/comment_edit.html",
+        {
+            "form": form,
+            "comment": comment,
+        }
+    )
+@login_required
+def comment_delete(request, pk):
+
+    comment = get_object_or_404(
+        Comment,
+        pk=pk
+    )
+
+    # Only the comment owner can delete it
+    if comment.author != request.user:
+        return redirect(
+            "blog_detail",
+            pk=comment.blog.pk
+        )
+
+    blog_pk = comment.blog.pk
+
+    if request.method == "POST":
+
+        comment.delete()
+
+        messages.success(
+    request,
+    "Comment deleted successfully!"
+)
+
+    return redirect(
+    "blog_detail",
+    pk=blog_pk
+)
+
+    return render(
+        request,
+        "blog/comment_delete.html",
+        {
+            "comment": comment,
+        }
     )

@@ -1,5 +1,16 @@
 from django.contrib import admin
 from . import models
+from .models import Blog, Comment
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "author",
+        "blog",
+        "created_at",
+    )
 
 # Register your models here.
 class BlogAdmin(admin.ModelAdmin):
