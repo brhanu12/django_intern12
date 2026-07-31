@@ -1,8 +1,12 @@
 {% extends "blog/base.html" %}
 
+{% block title %}
+My Profile
+{% endblock %}
+
 {% block content %}
 
-<div class="max-w-2xl mx-auto mt-10 bg-white shadow-lg rounded-xl p-8">
+<div class="max-w-2xl mx-auto bg-white shadow-lg rounded-xl p-8">
 
     <h1 class="text-3xl font-bold mb-6">
 
@@ -10,57 +14,25 @@
 
     </h1>
 
-    <p>
+    <form
+        method="POST"
+        enctype="multipart/form-data"
+    >
 
-        Username:
+        {% csrf_token %}
 
-        <strong>
+        {{ form.as_p }}
 
-            {{ profile.user.username }}
+        <button
+            type="submit"
+            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+        >
 
-        </strong>
+            Save Profile
 
-    </p>
+        </button>
 
-    <p>
-
-        Email:
-
-        {{ profile.user.email }}
-
-    </p>
-
-    <p>
-
-        Phone:
-
-        {{ profile.phone }}
-
-    </p>
-
-    <p>
-
-        Address:
-
-        {{ profile.address }}
-
-    </p>
-
-    <p>
-
-        Website:
-
-        {{ profile.website }}
-
-    </p>
-
-    <p>
-
-        Bio:
-
-        {{ profile.bio }}
-
-    </p>
+    </form>
 
 </div>
 

@@ -4,18 +4,43 @@ from .forms import BlogForm
 from django.contrib.auth.decorators import login_required
 from .forms import CommentForm
 from django.contrib import messages
+from django.core.paginator import Paginator
 
 
 
 def blog_list(request):
-    blogs = Blog.objects.filter(isPublished=True).order_by('-created_at')
+
+    query = request.GET.get("q")
+
+    blogs = Blog.objects.filter(
+        isPublished=True
+    )
+
+    if query:
+
+        blogs = blogs.filter(
+            title__icontains=query
+        )
+
+    blogs = blogs.order_by("-created_at")
+
+    paginator = Paginator(
+        blogs,
+        5
+    )
+
+    page_number = request.GET.get("page")
+
+    blogs = paginator.get_page(page_number)
 
     return render(
         request,
-        'blog/list.html',
-        {'blogs': blogs}
+        "blog/list.html",
+        {
+            "blogs": blogs,
+            "query": query,
+        }
     )
-
 
 
 def blog_detail(request, pk):
