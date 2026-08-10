@@ -186,61 +186,6 @@ My Blog — Posts
 {% endif %}
 
 </div>
-{% if blogs.has_other_pages %}
 
-<div class="flex justify-center mt-10">
-
-    <div class="flex space-x-2">
-
-        {% if blogs.has_previous %}
-
-        <a
-            href="?page={{ blogs.previous_page_number }}{% if query %}&q={{ query }}{% endif %}"
-            class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-        >
-            Previous
-        </a>
-
-        {% endif %}
-
-        {% for page in blogs.paginator.page_range %}
-
-            {% if page == blogs.number %}
-
-                <span
-                    class="px-4 py-2 bg-blue-600 text-white rounded"
-                >
-                    {{ page }}
-                </span>
-
-            {% else %}
-
-                <a
-                    href="?page={{ page }}{% if query %}&q={{ query }}{% endif %}"
-                    class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-                >
-                    {{ page }}
-                </a>
-
-            {% endif %}
-
-        {% endfor %}
-
-        {% if blogs.has_next %}
-
-        <a
-            href="?page={{ blogs.next_page_number }}{% if query %}&q={{ query }}{% endif %}"
-            class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-        >
-            Next
-        </a>
-
-        {% endif %}
-
-    </div>
-
-</div>
-
-{% endif %}
 
 {% endblock %}

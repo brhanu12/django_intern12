@@ -1,0 +1,306 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto">
+
+    <h1 class="text-4xl font-bold mb-8">
+        Dashboard
+    </h1>
+
+    <!-- Statistics -->
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <div class="bg-blue-600 text-white rounded-xl p-6 shadow">
+
+            <h2 class="text-lg font-semibold">
+                Total Blogs
+            </h2>
+
+            <p class="text-4xl font-bold mt-4">
+                {{ total_blogs }}
+            </p>
+
+        </div>
+
+        <div class="bg-green-600 text-white rounded-xl p-6 shadow">
+
+            <h2 class="text-lg font-semibold">
+                Total Users
+            </h2>
+
+            <p class="text-4xl font-bold mt-4">
+                {{ total_users }}
+            </p>
+
+        </div>
+
+        <div class="bg-yellow-500 text-white rounded-xl p-6 shadow">
+
+            <h2 class="text-lg font-semibold">
+                My Blogs
+            </h2>
+
+            <p class="text-4xl font-bold mt-4">
+                {{ my_blogs }}
+            </p>
+
+        </div>
+
+        <div class="bg-purple-600 text-white rounded-xl p-6 shadow">
+
+            <h2 class="text-lg font-semibold">
+                Comments
+            </h2>
+
+            <p class="text-4xl font-bold mt-4">
+                {{ total_comments }}
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- Quick Actions -->
+
+    <div class="mt-10 flex gap-4 flex-wrap">
+
+        <a href="{% url 'blog_create' %}"
+           class="bg-blue-600 text-white px-5 py-3 rounded-lg">
+
+            Create Blog
+
+        </a>
+
+        <a href="{% url 'blog_list' %}"
+           class="bg-green-600 text-white px-5 py-3 rounded-lg">
+
+            View Blogs
+
+        </a>
+
+        <a href="{% url 'profile' %}"
+           class="bg-purple-600 text-white px-5 py-3 rounded-lg">
+
+            My Profile
+
+        </a>
+
+    </div>
+
+    <!-- Information -->
+
+    <div class="grid md:grid-cols-2 gap-8 mt-10">
+
+        <div class="bg-white shadow rounded-xl p-6">
+
+            <h2 class="text-xl font-bold mb-4">
+                Blog Information
+            </h2>
+
+            <p>
+                Published :
+                <strong>{{ published_blogs }}</strong>
+            </p>
+
+            <p>
+                Unpublished :
+                <strong>{{ unpublished_blogs }}</strong>
+            </p>
+
+            {% if latest_blog %}
+
+            <p class="mt-4">
+
+                Latest Blog :
+
+                <strong>
+                    {{ latest_blog.title }}
+                </strong>
+
+            </p>
+
+            {% endif %}
+
+            {% if most_viewed %}
+
+            <p>
+
+                Most Viewed :
+
+                <strong>
+                    {{ most_viewed.title }}
+                </strong>
+
+                ({{ most_viewed.number_of_views }} Views)
+
+            </p>
+
+            {% endif %}
+
+        </div>
+
+        <div class="bg-white shadow rounded-xl p-6">
+
+            <h2 class="text-xl font-bold mb-4">
+                Recent Comments
+            </h2>
+
+            {% for comment in recent_comments %}
+
+                <div class="border-b py-3">
+
+                    <strong>
+
+                        {{ comment.author.username }}
+
+                    </strong>
+
+                    on
+
+                    <strong>
+
+                        {{ comment.blog.title }}
+
+                    </strong>
+
+                    <p class="text-gray-600">
+
+                        {{ comment.content|truncatewords:12 }}
+
+                    </p>
+
+                </div>
+
+            {% empty %}
+
+                No Comments
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    <!-- Recent Blogs -->
+
+    <div class="bg-white shadow rounded-xl mt-10">
+
+        <h2 class="text-2xl font-bold p-6">
+
+            Recent Blogs
+
+        </h2>
+
+        <table class="w-full">
+
+            <thead class="bg-gray-100">
+
+                <tr>
+
+                    <th class="p-4 text-left">
+                        Title
+                    </th>
+
+                    <th class="p-4 text-left">
+                        Author
+                    </th>
+
+                    <th class="p-4 text-left">
+                        Views
+                    </th>
+
+                    <th class="p-4 text-left">
+                        Status
+                    </th>
+
+                    <th class="p-4 text-left">
+                        Date
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for blog in recent_blogs %}
+
+                <tr class="border-b hover:bg-gray-50">
+
+                    <td class="p-4">
+
+                        {{ blog.title }}
+
+                    </td>
+
+                    <td class="p-4">
+
+                        {{ blog.author.username }}
+
+                    </td>
+
+                    <td class="p-4">
+
+                        {{ blog.number_of_views }}
+
+                    </td>
+
+                    <td class="p-4">
+
+                        {% if blog.isPublished %}
+
+                            <span class="text-green-600 font-bold">
+
+                                Published
+
+                            </span>
+
+                        {% else %}
+
+                            <span class="text-red-600 font-bold">
+
+                                Draft
+
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td class="p-4">
+
+                        {{ blog.created_at|date:"M d, Y" }}
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="5" class="text-center p-6">
+
+                        No Blogs Available
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -11,6 +11,7 @@ urlpatterns = [
     path('update/<int:pk>/', views.blog_update, name='blog_update'),
 
     path('delete/<int:pk>/', views.blog_delete, name='blog_delete'),
+    
     path(
     "comment/<int:pk>/edit/",
     views.comment_edit,
@@ -22,6 +23,12 @@ path(
     views.comment_delete,
     name="comment_delete",
 ),
+path(
+    "dashboard/",
+    views.dashboard,
+    name="dashboard",
+),
+
     
 
 ]
